@@ -2,96 +2,141 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cosy Isles Video Board</title>
+<title>Cosy Isles Billboard</title>
 
 <style>
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: black;
+    background: #000;
     overflow: hidden;
-    font-family: Arial, sans-serif;
 }
 
-/* Video */
+/* ====== 2048 SL BILLBOARD FRAME ====== */
+.stage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vmin;
+    height: 100vmin;
+    transform: translate(-50%, -50%);
+    max-width: 2048px;
+    max-height: 2048px;
+    overflow: hidden;
+    background: black;
+    box-shadow: 0 0 120px rgba(0,0,0,0.8);
+}
+
+/* ====== VIDEO BACKGROUND ====== */
 video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.95) contrast(1.05);
-    animation: fadeIn 2s ease-in-out;
+    filter: brightness(0.95) contrast(1.1);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Overlay branding */
-.overlay {
+/* ====== DARK GRADIENT FOR LUXURY DEPTH ====== */
+.vignette {
     position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    color: white;
-    z-index: 10;
+    inset: 0;
+    background: radial-gradient(circle at center,
+        rgba(0,0,0,0.0) 40%,
+        rgba(0,0,0,0.55) 100%);
     pointer-events: none;
 }
 
-.title {
-    font-size: 28px;
-    letter-spacing: 4px;
+/* ====== GOLD LOGO ====== */
+.logo {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 64px;
+    letter-spacing: 10px;
     font-weight: 300;
+    color: transparent;
+    background: linear-gradient(
+        120deg,
+        #b08d2a,
+        #f6e27a,
+        #d4af37,
+        #fff3b0,
+        #b08d2a
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    opacity: 0;
+    animation: fadeIn 2.5s ease forwards, shimmer 4s infinite linear;
 }
 
-.subtitle {
-    font-size: 14px;
-    opacity: 0.8;
-    letter-spacing: 2px;
-    margin-top: 6px;
+/* Subtitle */
+.tagline {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    letter-spacing: 4px;
+    opacity: 0;
+    animation: fadeIn 2.5s ease forwards;
+    animation-delay: 1s;
+}
+
+/* Fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Gold shimmer animation */
+@keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
 }
 
 /* Sound button */
 .sound-btn {
     position: absolute;
-    bottom: 30px;
-    right: 30px;
-    z-index: 20;
-    background: rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: white;
+    bottom: 40px;
+    right: 40px;
+    z-index: 10;
     padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.5);
+    color: white;
     cursor: pointer;
-    border-radius: 8px;
-    backdrop-filter: blur(6px);
-    transition: 0.3s;
-}
-
-.sound-btn:hover {
-    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
 }
 </style>
 </head>
 
 <body>
 
-<!-- Video -->
-<video id="vid" autoplay loop muted playsinline>
-    <source src="https://files.catbox.moe/7z3pl0.mp4" type="video/mp4">
-</video>
+<div class="stage">
 
-<!-- Branding overlay -->
-<div class="overlay">
-    <div class="title">COSY ISLES</div>
-    <div class="subtitle">Luxury Island Living</div>
+    <!-- VIDEO -->
+    <video id="vid" autoplay loop muted playsinline>
+        <source src="https://files.catbox.moe/7z3pl0.mp4" type="video/mp4">
+    </video>
+
+    <!-- VIGNETTE -->
+    <div class="vignette"></div>
+
+    <!-- GOLD LOGO -->
+    <div class="logo">COSY ISLES</div>
+    <div class="tagline">Luxury Island Living</div>
+
+    <!-- SOUND BUTTON -->
+    <button class="sound-btn" onclick="toggleSound()">
+        🔊 Enable Sound
+    </button>
+
 </div>
-
-<!-- Sound button -->
-<button class="sound-btn" onclick="toggleSound()">
-🔊 Enable Sound
-</button>
 
 <script>
 const vid = document.getElementById("vid");
@@ -100,7 +145,7 @@ const btn = document.querySelector(".sound-btn");
 function tryPlay() {
     let p = vid.play();
     if (p !== undefined) {
-        p.catch(() => setTimeout(tryPlay, 1000));
+        p.catch(() => setTimeout(tryPlay, 800));
     }
 }
 
@@ -115,10 +160,9 @@ function toggleSound() {
     }
 }
 
-// ensure autoplay reliability (important for SL + browsers)
 tryPlay();
 
-// safety loop in case SL pauses media
+// SL stability safety loop
 setInterval(() => {
     if (vid.paused) vid.play();
 }, 2000);
