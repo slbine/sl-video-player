@@ -1,8 +1,128 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:black;">
-<video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;">
-  <source src="https://files.catbox.moe/7z3pl0.mp4" type="video/mp4">
+<head>
+<meta charset="UTF-8">
+<title>Cosy Isles Video Board</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+/* Video */
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.95) contrast(1.05);
+    animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Overlay branding */
+.overlay {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.title {
+    font-size: 28px;
+    letter-spacing: 4px;
+    font-weight: 300;
+}
+
+.subtitle {
+    font-size: 14px;
+    opacity: 0.8;
+    letter-spacing: 2px;
+    margin-top: 6px;
+}
+
+/* Sound button */
+.sound-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    z-index: 20;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
+    transition: 0.3s;
+}
+
+.sound-btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+</style>
+</head>
+
+<body>
+
+<!-- Video -->
+<video id="vid" autoplay loop muted playsinline>
+    <source src="https://files.catbox.moe/7z3pl0.mp4" type="video/mp4">
 </video>
+
+<!-- Branding overlay -->
+<div class="overlay">
+    <div class="title">COSY ISLES</div>
+    <div class="subtitle">Luxury Island Living</div>
+</div>
+
+<!-- Sound button -->
+<button class="sound-btn" onclick="toggleSound()">
+🔊 Enable Sound
+</button>
+
+<script>
+const vid = document.getElementById("vid");
+const btn = document.querySelector(".sound-btn");
+
+function tryPlay() {
+    let p = vid.play();
+    if (p !== undefined) {
+        p.catch(() => setTimeout(tryPlay, 1000));
+    }
+}
+
+function toggleSound() {
+    vid.muted = !vid.muted;
+
+    if (!vid.muted) {
+        vid.play();
+        btn.innerHTML = "🔇 Mute";
+    } else {
+        btn.innerHTML = "🔊 Enable Sound";
+    }
+}
+
+// ensure autoplay reliability (important for SL + browsers)
+tryPlay();
+
+// safety loop in case SL pauses media
+setInterval(() => {
+    if (vid.paused) vid.play();
+}, 2000);
+</script>
+
 </body>
 </html>
